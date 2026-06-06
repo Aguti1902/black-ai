@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── LIGHT THEME (default — editorial) ─── */
+:root,
+[data-theme='light'] {
+  /* Surfaces */
+  --bg:      #FAFBFB;
+  --bg-2:    #F4F5F5;
+  --surface: #FFFFFF;
+  --border:  #EEEEEE;
+
+  /* Gold accent */
+  --gold:    #B8924A;
+
+  /* Typography */
+  --ink:     #141414;
+  --body:    #5A5A5A;
+  --muted:   #9A9A9A;
+
+  /* Dark sections (stats bar, CTA) — constant */
+  --dark:    #141414;
+
+  /* Legacy tokens — mapped so old component classes still resolve */
+  --black:          var(--bg);
+  --deep:           var(--bg-2);
+  --accent:         var(--gold);
+  --accent-cold:    #5C7CBA;
+  --accent-contrast: var(--bg);
+  --text-primary:   var(--ink);
+  --text-secondary: var(--body);
+  --text-muted:     var(--muted);
+
+  /* Misc */
+  --grain-opacity: 0;
+  color-scheme: light;
+}
+
+/* ─── DARK THEME (toggle) ─── */
+[data-theme='dark'] {
+  --bg:      #050508;
+  --bg-2:    #0A0A12;
+  --surface: #0F0F1A;
+  --border:  #1A1A2E;
+  --gold:    #C8A96E;
+  --ink:     #F0EDE8;
+  --body:    #8A8A9A;
+  --muted:   #4A4A5A;
+  --dark:    #141414;
+
+  --black:          var(--bg);
+  --deep:           var(--bg-2);
+  --accent:         var(--gold);
+  --accent-cold:    #4A9EFF;
+  --accent-contrast: var(--bg);
+  --text-primary:   var(--ink);
+  --text-secondary: var(--body);
+  --text-muted:     var(--muted);
+
+  --grain-opacity: 0.04;
+  color-scheme: dark;
+}
+
+/* ─── BASE ─── */
+@layer base {
+  * { border-color: var(--border); }
+
+  *, ::before, ::after {
+    transition:
+      background-color 0.4s ease,
+      border-color 0.35s ease,
+      color 0.3s ease;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: Inter, system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: rgba(184, 146, 74, 0.18);
+    color: var(--ink);
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-2); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+}
+
+/* ─── COMPONENTS ─── */
+@layer components {
+  .container-content {
+    @apply mx-auto w-full max-w-content px-6 md:px-10 lg:px-16;
+  }
+
+  /*
+   * EYEBROW LABEL  —  Grenergy style:
+   * Space Grotesk 700 · 13px · UPPERCASE · 0.6px letter-spacing · ink
+   */
+  .eyebrow {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    display: block;
+  }
+
+  /*
+   * DISPLAY HEADLINE  —  Grenergy style:
+   * Space Grotesk 700 · uppercase · tight line-height
+   * (CSS class retained as "display-italic" for component compat — no italic)
+   */
+  .display-italic {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  /* Alias */
+  .display-bold-italic {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  /* Gold-border button — Space Grotesk 700 uppercase */
+  .btn-gold {
+    @apply relative inline-flex items-center gap-3 overflow-hidden px-8 py-4;
+    border: 1px solid var(--gold);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    background: transparent;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .btn-gold:hover {
+    background: var(--gold);
+    color: var(--bg);
+  }
+
+  /* Dark CTA button — Grenergy navbar style */
+  .btn-dark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #141414;
+    color: white;
+    padding: 13px 20px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 3px;
+    transition: background 0.2s;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn-dark:hover { background: #2a2a2a; }
+
+  /* Light button for dark backgrounds */
+  .btn-light {
+    @apply relative inline-flex items-center gap-3 overflow-hidden px-8 py-4;
+    border: 1px solid rgba(250,250,248,0.5);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #FAFAF8;
+    background: transparent;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .btn-light:hover {
+    background: rgba(250,250,248,0.1);
+  }
+
+  /* Text link with arrow */
+  .link-arrow {
+    @apply inline-flex items-center gap-2;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    transition: color 0.3s ease;
+  }
+  .link-arrow:hover { color: var(--gold); }
+  .link-arrow svg { transition: transform 0.3s ease; }
+  .link-arrow:hover svg { transform: translateX(4px); }
+
+  /* Dividers */
+  .hairline      { height: 1px; background: #EEEEEE; width: 100%; }
+  .hairline-gold { height: 1px; background: var(--gold); opacity: 0.4; width: 100%; }
+
+  /* Section alternation helpers */
+  .section-light { background-color: var(--bg); }
+  .section-alt   { background-color: var(--bg-2); }
+  .section-dark  { background-color: #141414; }
+}
+
+/* ─── UTILITIES ─── */
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  /* Grain overlay (only visible in dark mode) */
+  .grain::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Light-mode subtle mesh for hero (very faint in light, more visible in dark) */
+  .mesh-bg {
+    background-color: var(--bg);
+  }
+  /* Grid lines only show in dark mode */
+  .grid-lines {
+    background-image:
+      linear-gradient(to right, rgba(26,26,46,0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(26,26,46,0.35) 1px, transparent 1px);
+    background-size: 80px 80px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, #000 30%, transparent 80%);
+    mask-image:         radial-gradient(ellipse 70% 70% at 50% 40%, #000 30%, transparent 80%);
+  }
+  [data-theme='light'] .grid-lines { display: none; }
+}
