@@ -69,16 +69,20 @@ export default function NoticiaDetalle() {
             </p>
           </Reveal>
 
-          {/* Full body — use item.body if exists, otherwise expanded excerpt */}
+          {/* Full body — split on double newlines for multi-paragraph support */}
           {item.body && (
             <Reveal delay={0.08}>
               <div
                 className="prose-content mt-8 space-y-5 text-[1rem] leading-relaxed text-[color:var(--body)]"
                 style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
               >
-                {(Array.isArray(item.body) ? item.body : [item.body]).map((para, i) => (
-                  <p key={i}>{typeof para === 'object' ? L(para) : para}</p>
-                ))}
+                {(() => {
+                  const raw = typeof item.body === 'object' ? L(item.body) : item.body
+                  if (!raw) return null
+                  return raw.split(/\n\n+/).filter(Boolean).map((para, i) => (
+                    <p key={i} style={{ whiteSpace: 'pre-line' }}>{para.trim()}</p>
+                  ))
+                })()}
               </div>
             </Reveal>
           )}

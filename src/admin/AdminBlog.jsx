@@ -1,7 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Pencil, Trash2, Plus, ArrowLeft, Save, Loader } from 'lucide-react'
+import { Pencil, Trash2, Plus, ArrowLeft, Save, Loader, Upload, Eye } from 'lucide-react'
 import { useAdminNews } from './useAdminData.js'
+import { supabase } from '../lib/supabase.js'
+
+const BUCKET = 'images'
 
 const s = {
   page:    { padding: '40px 48px', maxWidth: '900px' },
@@ -84,34 +87,47 @@ function rowToForm(existing) {
 }
 
 export function AdminBlogEditor() {
-  const { id }  = useParams()
-  const isNew   = id === 'new'
+  const { id }   = useParams()
+  const isNew    = id === 'new'
   const navigate = useNavigate()
   const { rows, loading, upsert } = useAdminNews()
+  const fileRef  = useRef(null)
 
-  const [form, setForm]       = useState(EMPTY)
+  const [form, setForm]         = useState(EMPTY)
   const [hydrated, setHydrated] = useState(false)
-  const [saving, setSaving]   = useState(false)
-  const [error, setError]     = useState('')
+  const [saving, setSaving]     = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [error, setError]       = useState('')
+  const [success, setSuccess]   = useState('')
 
   useEffect(() => {
     if (!isNew && !hydrated && !loading && rows.length > 0) {
       const existing = rows.find(r => r.id === id)
-      if (existing) {
-        setForm(rowToForm(existing))
-        setHydrated(true)
-      }
+      if (existing) { setForm(rowToForm(existing)); setHydrated(true) }
     }
   }, [rows, loading, id, isNew, hydrated])
 
   function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
 
+  async function uploadImage(file) {
+    if (!file) return
+    setUploading(true)
+    const ext  = file.name.split('.').pop()
+    const path = `blog/${Date.now()}.${ext}`
+    const { error: err } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: true })
+    if (err) { setError('Image upload failed: ' + err.message); setUploading(false); return }
+    const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
+    set('imageSrc', data.publicUrl)
+    setUploading(false)
+  }
+
   async function save() {
     if (!form.titleEn) { setError('Title (EN) is required'); return }
-    setSaving(true); setError('')
+    setSaving(true); setError(''); setSuccess('')
     try {
       await upsert(form, isNew ? undefined : id)
-      navigate('/admin/blog')
+      setSuccess('Article saved successfully!')
+      setTimeout(() => navigate('/admin/blog'), 900)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -119,15 +135,18 @@ export function AdminBlogEditor() {
     }
   }
 
-  const F = ({ label, field, multiline = false, rows: r = 3 }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-      <label style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.35)', fontFamily: '"Space Grotesk", sans-serif' }}>{label}</label>
+  const inputStyle = { backgroundColor: '#0A0A12', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', padding: '10px 12px', outline: 'none', resize: 'vertical', borderRadius: 0, width: '100%' }
+
+  const F = ({ label, field, multiline = false, rows: r = 3, hint }) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+      <label style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.35)', fontFamily: '"Space Grotesk", sans-serif' }}>
+        {label}
+      </label>
       {multiline
-        ? <textarea value={form[field]} onChange={e => set(field, e.target.value)} rows={r}
-            style={{ backgroundColor: '#0A0A12', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', padding: '10px 12px', outline: 'none', resize: 'vertical', borderRadius: 0 }} />
-        : <input value={form[field]} onChange={e => set(field, e.target.value)}
-            style={{ backgroundColor: '#0A0A12', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', padding: '10px 12px', outline: 'none', borderRadius: 0 }} />
+        ? <textarea value={form[field]} onChange={e => set(field, e.target.value)} rows={r} style={inputStyle} />
+        : <input    value={form[field]} onChange={e => set(field, e.target.value)} style={inputStyle} />
       }
+      {hint && <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.22)', fontFamily: 'Inter, sans-serif' }}>{hint}</span>}
     </div>
   )
 
@@ -144,32 +163,78 @@ export function AdminBlogEditor() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
         <Link to="/admin/blog" style={{ ...s.btnGhost, padding: '8px 12px' }}><ArrowLeft size={14} /></Link>
         <h1 style={s.h1}>{isNew ? 'New Article' : 'Edit Article'}</h1>
+        {!isNew && (
+          <a href={`/noticias/${id}`} target="_blank" rel="noopener" style={{ ...s.btnGhost, marginLeft: 'auto', textDecoration: 'none' }}>
+            <Eye size={13} /> Preview
+          </a>
+        )}
       </div>
 
-      {error && <div style={s.err}>{error}</div>}
+      {error   && <div style={s.err}>{error}</div>}
+      {success && <div style={{ ...s.err, backgroundColor: 'rgba(74,222,128,0.1)', borderColor: 'rgba(74,222,128,0.25)', color: '#4ade80' }}>{success}</div>}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <F label="Title (EN) *" field="titleEn" />
-          <F label="Title (ES)" field="titleEs" />
-          <F label="Excerpt (EN)" field="excerptEn" multiline rows={2} />
-          <F label="Excerpt (ES)" field="excerptEs" multiline rows={2} />
-          <F label="Body (EN)" field="bodyEn" multiline rows={6} />
-          <F label="Body (ES)" field="bodyEs" multiline rows={6} />
-          <F label="Category (EN)" field="categoryEn" />
-          <F label="Category (ES)" field="categoryEs" />
-          <F label="Date (EN) — e.g. June 2026" field="dateEn" />
-          <F label="Date (ES) — e.g. Junio 2026" field="dateEs" />
-        </div>
-        <F label="Image URL (or Supabase Storage path)" field="imageSrc" />
 
-        <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+        {/* Titles */}
+        <div style={{ padding: '16px', border: '1px solid rgba(255,255,255,0.06)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
+          <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.2)', marginBottom: '14px', fontFamily: '"Space Grotesk", sans-serif' }}>Titles &amp; Categories</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            <F label="Title (EN) *" field="titleEn" />
+            <F label="Title (ES)" field="titleEs" />
+            <F label="Category (EN)" field="categoryEn" hint="e.g. Project Update" />
+            <F label="Category (ES)" field="categoryEs" hint="e.g. Actualización de Proyecto" />
+            <F label="Date (EN)" field="dateEn" hint="e.g. June 2026" />
+            <F label="Date (ES)" field="dateEs" hint="e.g. Junio 2026" />
+          </div>
+        </div>
+
+        {/* Excerpts */}
+        <div style={{ padding: '16px', border: '1px solid rgba(255,255,255,0.06)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
+          <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.2)', marginBottom: '14px', fontFamily: '"Space Grotesk", sans-serif' }}>Excerpt (shown in card &amp; article lead)</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            <F label="Excerpt (EN)" field="excerptEn" multiline rows={3} />
+            <F label="Excerpt (ES)" field="excerptEs" multiline rows={3} />
+          </div>
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: '16px', border: '1px solid rgba(255,255,255,0.06)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
+          <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.2)', marginBottom: '4px', fontFamily: '"Space Grotesk", sans-serif' }}>Article Body</p>
+          <p style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.2)', marginBottom: '14px', fontFamily: 'Inter, sans-serif' }}>Separate paragraphs with a blank line (double Enter).</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+            <F label="Body (EN)" field="bodyEn" multiline rows={10} />
+            <F label="Body (ES)" field="bodyEs" multiline rows={10} />
+          </div>
+        </div>
+
+        {/* Image */}
+        <div style={{ padding: '16px', border: '1px solid rgba(255,255,255,0.06)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
+          <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.2)', marginBottom: '14px', fontFamily: '"Space Grotesk", sans-serif' }}>Cover Image</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '12px', alignItems: 'start' }}>
+            <F label="Image URL" field="imageSrc" hint="Paste a URL or upload a file →" />
+            <div style={{ paddingTop: '22px' }}>
+              <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => uploadImage(e.target.files[0])} />
+              <button onClick={() => fileRef.current?.click()} disabled={uploading} style={{ ...s.btnGhost, whiteSpace: 'nowrap' }}>
+                {uploading ? <Loader size={13} className="animate-spin" /> : <Upload size={13} />}
+                {uploading ? 'Uploading…' : 'Upload'}
+              </button>
+            </div>
+          </div>
+          {form.imageSrc && (
+            <div style={{ marginTop: '12px' }}>
+              <img src={form.imageSrc} alt="preview" style={{ maxHeight: '140px', maxWidth: '100%', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }} onError={e => e.target.style.display='none'} />
+            </div>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
           <button onClick={save} disabled={saving} style={{ ...s.btn, opacity: saving ? 0.7 : 1 }}>
             {saving ? <Loader size={13} className="animate-spin" /> : <Save size={13} />}
             {saving ? 'Saving…' : 'Save Article'}
           </button>
           <Link to="/admin/blog" style={s.btnGhost}>Cancel</Link>
         </div>
+
       </div>
     </div>
   )
