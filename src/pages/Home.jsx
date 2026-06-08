@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 import PageTransition from '../components/PageTransition.jsx'
-import StatBar from '../components/StatBar.jsx'
 import ProjectCard from '../components/ProjectCard.jsx'
 import SectionHeader from '../components/SectionHeader.jsx'
 import Reveal from '../components/Reveal.jsx'
@@ -214,7 +213,7 @@ export default function Home() {
 
             {/* Columna derecha — imagen */}
             <Reveal y={30} delay={0.12} className="h-full">
-              <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4/5' }}>
+              <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '3/4' }}>
                 <PhotoPlaceholder
                   src="/images/image.jpg"
                   alt="Black AI — human and robot collaboration"
@@ -286,12 +285,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════
-          5. STATS — dark, 4 columnas, números 100px
-      ══════════════════════════════════════════ */}
-      <StatBar />
-
-      {/* ══════════════════════════════════════════
-          5b. LIVE CAPACITY TICKER
+          5. LIVE CAPACITY TICKER
       ══════════════════════════════════════════ */}
       <LiveCapacityTicker />
 
