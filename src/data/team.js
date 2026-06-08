@@ -7,7 +7,7 @@ export const team = [
       en: 'Founder and Chief Executive Officer of BLACK AI, Jose Mora leads the company\'s strategic vision, corporate development and international expansion initiatives. With extensive experience in the origination, structuring and development of large-scale infrastructure projects, he oversees the growth of BLACK AI\'s hyperscale AI infrastructure platform across Europe and Latin America. His focus is centered on transforming strategic energy, connectivity and land opportunities into institutional-grade digital infrastructure assets designed to support the next generation of artificial intelligence and high-performance computing.',
       es: 'Fundador y Consejero Delegado de BLACK AI, Jose Mora lidera la visión estratégica, el desarrollo corporativo y las iniciativas de expansión internacional de la compañía. Con amplia experiencia en la originación, estructuración y desarrollo de proyectos de infraestructura a gran escala, supervisa el crecimiento de la plataforma de infraestructura de IA a hiperescala de BLACK AI en Europa y América Latina.',
     },
-    imageSrc: '',
+    imageSrc: '/Fotos Equipo/Jose Mora.jpg',
   },
   {
     name: 'Charlie Faulkner',
@@ -17,7 +17,7 @@ export const team = [
       en: 'Founder and Chief Business Development Officer, Charlie Faulkner is responsible for the commercial strategy and market positioning of BLACK AI. He leads engagement with hyperscalers, cloud providers, technology partners and strategic investors, ensuring alignment between market demand and the company\'s development pipeline. His role is focused on building long-term commercial relationships that support the growth and monetization of BLACK AI\'s digital infrastructure platform.',
       es: 'Fundador y Director de Desarrollo de Negocio, Charlie Faulkner es responsable de la estrategia comercial y el posicionamiento de mercado de BLACK AI. Lidera el relacionamiento con hiperescaladores, proveedores cloud, socios tecnológicos e inversores estratégicos.',
     },
-    imageSrc: '',
+    imageSrc: '/Fotos Equipo/Charlie Faulkner.jpeg',
   },
   {
     name: 'Simon Wajcenberg',
@@ -27,7 +27,7 @@ export const team = [
       en: 'Founder and Chief Financial Officer, Simon Wajcenberg leads the company\'s capital strategy, financial structuring and institutional financing initiatives. He is responsible for developing the financial frameworks required to support large-scale AI infrastructure investments, including project finance, capital formation, strategic partnerships and corporate growth initiatives.',
       es: 'Fundador y Director Financiero, Simon Wajcenberg lidera la estrategia de capital, la estructuración financiera y las iniciativas de financiación institucional de la compañía. Es responsable de desarrollar los marcos financieros necesarios para respaldar inversiones de infraestructura de IA a gran escala.',
     },
-    imageSrc: '',
+    imageSrc: '/Fotos Equipo/Simon Wajcenberg.jpeg',
   },
   {
     name: 'Carmen Mora',
@@ -37,7 +37,7 @@ export const team = [
       en: 'As Chief Operating Officer, Carmen Mora oversees the execution and coordination of BLACK AI\'s development platform across multiple jurisdictions. She is responsible for managing project delivery, regulatory processes, stakeholder engagement and operational governance, ensuring that each infrastructure asset progresses efficiently through development milestones.',
       es: 'Como Directora de Operaciones, Carmen Mora supervisa la ejecución y coordinación de la plataforma de desarrollo de BLACK AI en múltiples jurisdicciones. Es responsable de la gestión de la entrega de proyectos, los procesos regulatorios y el gobierno operacional.',
     },
-    imageSrc: '',
+    imageSrc: '/Fotos Equipo/Carmen Mora.jpg',
   },
   {
     name: 'Jesus Mora',
@@ -47,7 +47,7 @@ export const team = [
       en: 'As Chief Technology Officer, Jesus Mora leads the technical strategy and infrastructure design of BLACK AI\'s hyperscale campuses. His responsibilities include the integration of power infrastructure, digital connectivity, campus master planning and next-generation data center architecture optimized for artificial intelligence and high-performance computing.',
       es: 'Como Director de Tecnología, Jesus Mora lidera la estrategia técnica y el diseño de infraestructura de los campus a hiperescala de BLACK AI. Sus responsabilidades incluyen la integración de infraestructura eléctrica, conectividad digital y planificación maestra de campus.',
     },
-    imageSrc: '',
+    imageSrc: '/Fotos Equipo/Jesus Mora.jpeg',
   },
   {
     name: 'Jose Monrobe',
@@ -57,7 +57,7 @@ export const team = [
       en: 'As Head of Communications, Jose Monrobe leads BLACK AI\'s corporate communications, institutional positioning and stakeholder engagement strategy. He is responsible for shaping the company\'s public profile across investors, strategic partners, industry stakeholders and public institutions, ensuring consistent communication of BLACK AI\'s vision, growth strategy and infrastructure development initiatives across Europe and Latin America.',
       es: 'Como Director de Comunicación, Jose Monrobe lidera las comunicaciones corporativas, el posicionamiento institucional y la estrategia de relación con grupos de interés de BLACK AI.',
     },
-    imageSrc: '',
+    imageSrc: '/Fotos Equipo/Jose Monrobe.jpg',
   },
   {
     name: 'Ana Arias',
@@ -67,7 +67,7 @@ export const team = [
       en: 'As Managing Director for Latin America, Ana Arias leads BLACK AI\'s regional growth strategy and development activities across the continent. She oversees project origination, stakeholder engagement, permitting coordination and strategic partnerships, driving the expansion of the company\'s AI infrastructure platform in key Latin American markets.',
       es: 'Como Directora General para América Latina, Ana Arias lidera la estrategia de crecimiento regional y las actividades de desarrollo de BLACK AI en el continente. Supervisa la originación de proyectos, el relacionamiento con actores clave y los acuerdos estratégicos.',
     },
-    imageSrc: '',
+    imageSrc: '/Fotos Equipo/Ana Arias.jpg',
   },
   {
     name: 'Miguel Collado',
@@ -77,7 +77,7 @@ export const team = [
       en: 'Miguel Collado leads land origination and strategic site identification activities across Latin America. He is responsible for evaluating development opportunities, securing strategic locations and conducting land intelligence analysis to support BLACK AI\'s long-term infrastructure growth strategy.',
       es: 'Miguel Collado lidera la originación de terrenos y la identificación de emplazamientos estratégicos en América Latina. Es responsable de evaluar oportunidades de desarrollo, asegurar ubicaciones estratégicas y realizar análisis de inteligencia territorial.',
     },
-    imageSrc: '',
+    imageSrc: '/Fotos Equipo/Miguel Collado.jpg',
   },
 ]
 
