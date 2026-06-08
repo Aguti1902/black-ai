@@ -46,7 +46,7 @@ export default function QuienesSomos() {
         title={t('about.heroTitle')}
         subtitle={t('about.heroSubtitle')}
         imageSrc="/images/inteligencia-artificial-google.jpg"
-        videoSrc="/VIDEO2.mov"
+        videoSrc="/video-about.mp4"
       />
 
       {/* ── MISSION + large photo ── */}

@@ -35,8 +35,8 @@ export default function Home() {
           poster="/images/inteligencia-artificial.jpg"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         >
+          <source src="/video-home.mp4" type="video/mp4" />
           <source src="/VIDEO 1 INICIO.mov" type="video/quicktime" />
-          <source src="/VIDEO 1 INICIO.mov" />
         </video>
 
         {/* Overlay sutil */}

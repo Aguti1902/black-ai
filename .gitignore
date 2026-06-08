@@ -3,6 +3,6 @@ dist
 .env.local
 .env
 
-# Large video files – host these on a CDN (Cloudflare R2, S3, Vimeo, etc.)
+# Original large source videos (keep locally, don't commit)
 public/*.mov
 public/*.MOV
