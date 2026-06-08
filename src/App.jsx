@@ -10,12 +10,15 @@ import LoadingScreen  from './components/LoadingScreen.jsx'
 import CustomCursor   from './components/CustomCursor.jsx'
 import CookieBanner   from './components/CookieBanner.jsx'
 
-import Home           from './pages/Home.jsx'
-import QuienesSomos   from './pages/QuienesSomos.jsx'
-import Proyectos      from './pages/Proyectos.jsx'
-import Noticias       from './pages/Noticias.jsx'
-import NoticiaDetalle from './pages/NoticiaDetalle.jsx'
-import Contacto       from './pages/Contacto.jsx'
+import Home            from './pages/Home.jsx'
+import QuienesSomos    from './pages/QuienesSomos.jsx'
+import Proyectos       from './pages/Proyectos.jsx'
+import Noticias        from './pages/Noticias.jsx'
+import NoticiaDetalle  from './pages/NoticiaDetalle.jsx'
+import Contacto        from './pages/Contacto.jsx'
+import Privacidad      from './pages/Privacidad.jsx'
+import PoliticaCookies from './pages/PoliticaCookies.jsx'
+import AvisoLegal      from './pages/AvisoLegal.jsx'
 
 import AdminLogin    from './admin/AdminLogin.jsx'
 import AdminLayout   from './admin/AdminLayout.jsx'
@@ -62,6 +65,9 @@ function PublicSite() {
           <Route path="/noticias"      element={<Noticias />} />
           <Route path="/noticias/:id"  element={<NoticiaDetalle />} />
           <Route path="/contacto"      element={<Contacto />} />
+          <Route path="/privacidad"    element={<Privacidad />} />
+          <Route path="/cookies"       element={<PoliticaCookies />} />
+          <Route path="/aviso-legal"   element={<AvisoLegal />} />
           <Route path="*"              element={<Home />} />
         </Routes>
       </AnimatePresence>

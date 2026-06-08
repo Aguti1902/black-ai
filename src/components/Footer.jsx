@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
 
 export default function Footer() {
@@ -33,9 +33,9 @@ export default function Footer() {
     {
       title: t('footer.legal'),
       links: [
-        { label: t('footer.privacy'), to: '/' },
-        { label: t('footer.terms'), to: '/' },
-        { label: t('footer.cookies'), to: '/' },
+        { label: t('footer.privacy'), to: '/privacidad' },
+        { label: t('footer.terms'),   to: '/aviso-legal' },
+        { label: t('footer.cookies'), to: '/cookies' },
       ],
     },
   ]
@@ -100,19 +100,36 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="container-content pb-8">
         <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', width: '100%', marginBottom: '1.5rem' }} />
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <span
             className="text-xs tracking-[0.1em]"
             style={{ fontFamily: '"Space Grotesk", system-ui, sans-serif', color: 'rgba(255,255,255,0.3)' }}
           >
             {t('footer.rights')}
           </span>
-          <span
-            className="text-xs tracking-[0.06em]"
-            style={{ fontFamily: '"Space Grotesk", system-ui, sans-serif', color: 'rgba(255,255,255,0.3)' }}
-          >
-            {t('footer.hq')}
-          </span>
+          <div className="flex flex-wrap gap-x-5 gap-y-2 items-center">
+            {[
+              { label: t('footer.privacy'), to: '/privacidad' },
+              { label: t('footer.cookies'), to: '/cookies' },
+              { label: t('footer.terms'),   to: '/aviso-legal' },
+            ].map(l => (
+              <Link
+                key={l.to}
+                to={l.to}
+                style={{
+                  fontFamily: '"Space Grotesk", system-ui, sans-serif',
+                  fontSize: '0.7rem',
+                  letterSpacing: '0.08em',
+                  color: 'rgba(255,255,255,0.28)',
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => (e.target.style.color = '#B8924A')}
+                onMouseLeave={e => (e.target.style.color = 'rgba(255,255,255,0.28)')}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
