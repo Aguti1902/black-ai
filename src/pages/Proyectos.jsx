@@ -3,6 +3,7 @@ import { MapPin, Check } from 'lucide-react'
 
 import PageTransition from '../components/PageTransition.jsx'
 import PageHero from '../components/PageHero.jsx'
+import SEO from '../components/SEO.jsx'
 import SectionHeader from '../components/SectionHeader.jsx'
 import Reveal from '../components/Reveal.jsx'
 import PdfCover from '../components/PdfCover.jsx'
@@ -136,6 +137,7 @@ export default function Proyectos() {
 
   return (
     <PageTransition>
+      <SEO title="Projects" description="Black AI development platform — hyperscale AI campuses across Europe and Latin America." path="/proyectos" />
       <PageHero
         eyebrow={t('projects.heroEyebrow')}
         title={t('projects.heroTitle')}

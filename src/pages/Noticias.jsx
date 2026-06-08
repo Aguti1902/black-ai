@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import PageTransition from '../components/PageTransition.jsx'
 import PageHero from '../components/PageHero.jsx'
+import SEO from '../components/SEO.jsx'
 import SectionHeader from '../components/SectionHeader.jsx'
 import PhotoPlaceholder from '../components/PhotoPlaceholder.jsx'
 import { usePublicNews } from '../hooks/usePublicNews.js'
@@ -14,6 +15,7 @@ export default function Noticias() {
 
   return (
     <PageTransition>
+      <SEO title="News" description="Latest news and updates from Black AI." path="/noticias" />
       <PageHero
         eyebrow={t('news.heroEyebrow')}
         title={t('news.heroTitle')}

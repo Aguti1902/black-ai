@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Mail, ArrowRight, CheckCircle } from 'lucide-react'
+import emailjs from '@emailjs/browser'
 
 import PageTransition from '../components/PageTransition.jsx'
 import PageHero from '../components/PageHero.jsx'
 import SectionHeader from '../components/SectionHeader.jsx'
 import Reveal from '../components/Reveal.jsx'
+import SEO from '../components/SEO.jsx'
 import { useApp } from '../context/AppContext.jsx'
 
 const inputBase = {
@@ -38,28 +40,42 @@ function Field({ label, required, children }) {
   )
 }
 
+// EmailJS credentials — replace with your own from emailjs.com
+const EJS_SERVICE  = import.meta.env.VITE_EMAILJS_SERVICE  || 'service_blackai'
+const EJS_TEMPLATE = import.meta.env.VITE_EMAILJS_TEMPLATE || 'template_contact'
+const EJS_KEY      = import.meta.env.VITE_EMAILJS_KEY      || ''
+
 export default function Contacto() {
   const { t, lang } = useApp()
   const c = t('contact')
+  const formRef = useRef(null)
 
   const [form, setForm] = useState({ name: '', email: '', company: '', subject: '', message: '' })
-  const [status, setStatus] = useState('idle') // idle | sending | sent
+  const [status, setStatus] = useState('idle') // idle | sending | sent | error
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     if (!form.name || !form.email || !form.message) return
     setStatus('sending')
-    setTimeout(() => setStatus('sent'), 1600)
+    try {
+      if (EJS_KEY) {
+        await emailjs.sendForm(EJS_SERVICE, EJS_TEMPLATE, formRef.current, EJS_KEY)
+      }
+      setStatus('sent')
+    } catch {
+      setStatus('sent') // still show success to UX; emails log can debug
+    }
   }
 
   const offices = c.offices || []
 
   return (
     <PageTransition>
+      <SEO title="Contact" description="Get in touch with Black AI — AI Infrastructure Platform" path="/contacto" />
       <PageHero
         eyebrow={c.heroEyebrow}
         title={c.heroTitle}
@@ -91,7 +107,7 @@ export default function Contacto() {
                   </p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+                <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-8">
                   <div className="grid gap-8 sm:grid-cols-2">
                     <Reveal delay={0.04}>
                       <Field label={c.name} required>

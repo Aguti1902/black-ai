@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 
 import PageTransition from '../components/PageTransition.jsx'
 import PageHero from '../components/PageHero.jsx'
+import SEO from '../components/SEO.jsx'
 import SectionHeader from '../components/SectionHeader.jsx'
 import Reveal from '../components/Reveal.jsx'
 import TeamCard from '../components/TeamCard.jsx'
@@ -41,6 +42,7 @@ export default function QuienesSomos() {
 
   return (
     <PageTransition>
+      <SEO title="Who We Are" description="Black AI — a global AI infrastructure development and investment company." path="/quienes-somos" />
       <PageHero
         eyebrow={t('about.heroEyebrow')}
         title={t('about.heroTitle')}

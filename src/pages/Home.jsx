@@ -8,7 +8,10 @@ import SectionHeader from '../components/SectionHeader.jsx'
 import Reveal from '../components/Reveal.jsx'
 import PhotoPlaceholder from '../components/PhotoPlaceholder.jsx'
 import AnimatedCounter from '../components/AnimatedCounter.jsx'
-import { projects } from '../data/projects.js'
+import ProjectMap from '../components/ProjectMap.jsx'
+import LiveCapacityTicker from '../components/LiveCapacityTicker.jsx'
+import SEO from '../components/SEO.jsx'
+import { usePublicProjects } from '../hooks/usePublicProjects.js'
 import { usePublicNews } from '../hooks/usePublicNews.js'
 import { useApp } from '../context/AppContext.jsx'
 
@@ -22,9 +25,11 @@ const focusAreas = [
 export default function Home() {
   const { t, lang, L } = useApp()
   const { news } = usePublicNews()
+  const { projects } = usePublicProjects()
 
   return (
     <PageTransition>
+      <SEO path="/" />
 
       {/* ══════════════════════════════════════════
           1. HERO — full viewport, video background
@@ -264,6 +269,16 @@ export default function Home() {
           5. STATS — dark, 4 columnas, números 100px
       ══════════════════════════════════════════ */}
       <StatBar />
+
+      {/* ══════════════════════════════════════════
+          5b. LIVE CAPACITY TICKER
+      ══════════════════════════════════════════ */}
+      <LiveCapacityTicker />
+
+      {/* ══════════════════════════════════════════
+          5c. INTERACTIVE PROJECT MAP
+      ══════════════════════════════════════════ */}
+      <ProjectMap />
 
       {/* ══════════════════════════════════════════
           6. TYPOGRAPHIC SECTION — masivo
