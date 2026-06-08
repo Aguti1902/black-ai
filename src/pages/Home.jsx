@@ -156,7 +156,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════
-          3. ABOUT — lead text + foto
+          3. ABOUT — dos columnas: texto izq / foto der
       ══════════════════════════════════════════ */}
       <section className="py-20 md:py-28" style={{ backgroundColor: 'var(--bg)' }}>
         <div className="container-content">
@@ -167,45 +167,65 @@ export default function Home() {
             className="mb-14"
           />
 
-          <Reveal delay={0.04}>
-            <h2
-              className="font-bold uppercase leading-[1.08] text-[color:var(--ink)]"
-              style={{
-                fontFamily: '"Space Grotesk", system-ui, sans-serif',
-                fontSize: 'clamp(1.9rem, 4vw, 3rem)',
-                letterSpacing: '-0.02em',
-                maxWidth: '820px',
-              }}
-            >
-              {t('home.about.title')}
-            </h2>
-          </Reveal>
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 lg:items-center">
 
-          <Reveal delay={0.1}>
-            <p
-              className="mt-7 mb-8 max-w-2xl text-[1.05rem] leading-relaxed text-[color:var(--body)]"
-              style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
-            >
-              {t('home.about.p1')}
-            </p>
-          </Reveal>
+            {/* Columna izquierda — texto */}
+            <div>
+              <Reveal delay={0.04}>
+                <h2
+                  className="font-bold uppercase leading-[1.08] text-[color:var(--ink)]"
+                  style={{
+                    fontFamily: '"Space Grotesk", system-ui, sans-serif',
+                    fontSize: 'clamp(1.6rem, 3vw, 2.4rem)',
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  {t('home.about.title')}
+                </h2>
+              </Reveal>
 
-          <Reveal delay={0.14}>
-            <p
-              className="mb-14 max-w-2xl text-[1rem] leading-relaxed text-[color:var(--body)]"
-              style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
-            >
-              {t('home.intro')}
-            </p>
-          </Reveal>
+              <Reveal delay={0.1}>
+                <p
+                  className="mt-6 text-[0.95rem] leading-relaxed text-[color:var(--body)]"
+                  style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+                >
+                  {t('home.about.p1')}
+                </p>
+              </Reveal>
 
-          <Reveal y={30} delay={0.15}>
-            <PhotoPlaceholder
-              src="/images/image.jpg"
-              alt="Black AI — human and robot collaboration"
-              aspect="16/9"
-            />
-          </Reveal>
+              <Reveal delay={0.14}>
+                <p
+                  className="mt-4 text-[0.92rem] leading-relaxed text-[color:var(--body)]"
+                  style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+                >
+                  {t('home.intro')}
+                </p>
+              </Reveal>
+
+              <Reveal delay={0.18}>
+                <Link
+                  to="/quienes-somos"
+                  className="btn-outline mt-8 inline-flex items-center gap-2"
+                >
+                  {t('common.learnMore')} ↗
+                </Link>
+              </Reveal>
+            </div>
+
+            {/* Columna derecha — imagen */}
+            <Reveal y={30} delay={0.12} className="h-full">
+              <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4/5' }}>
+                <PhotoPlaceholder
+                  src="/images/image.jpg"
+                  alt="Black AI — human and robot collaboration"
+                  aspect="none"
+                  className="absolute inset-0 h-full w-full"
+                  style={{ objectFit: 'cover', objectPosition: 'center' }}
+                />
+              </div>
+            </Reveal>
+
+          </div>
         </div>
       </section>
 
