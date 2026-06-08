@@ -215,11 +215,11 @@ export default function Home() {
             <Reveal y={30} delay={0.12} className="h-full">
               <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '3/4' }}>
                 <PhotoPlaceholder
-                  src="/images/image.jpg"
-                  alt="Black AI — human and robot collaboration"
+                  src="/images/utiliser-ia-en-entreprise-pour-productivite-scaled.webp"
+                  alt="Black AI — AI infrastructure in enterprise"
                   aspect="none"
                   className="absolute inset-0 h-full w-full"
-                  style={{ objectFit: 'cover', objectPosition: 'center' }}
+                  style={{ objectFit: 'cover', objectPosition: 'center top' }}
                 />
               </div>
             </Reveal>
