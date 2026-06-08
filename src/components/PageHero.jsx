@@ -8,12 +8,9 @@ export default function PageHero({ eyebrow, title, subtitle, imageSrc, videoSrc 
       {videoSrc ? (
         <video
           autoPlay muted loop playsInline
-          poster={imageSrc}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         >
-          <source src={videoSrc} />
-          {/* fallback */}
-          {imageSrc && <img src={imageSrc} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
+          <source src={videoSrc} type="video/mp4" />
         </video>
       ) : (
         <PhotoPlaceholder

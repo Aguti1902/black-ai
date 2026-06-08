@@ -32,7 +32,6 @@ export default function Home() {
       <section className="relative flex min-h-screen flex-col overflow-hidden">
         <video
           autoPlay muted loop playsInline
-          poster="/images/inteligencia-artificial.jpg"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         >
           <source src="/video-home.mp4" type="video/mp4" />
