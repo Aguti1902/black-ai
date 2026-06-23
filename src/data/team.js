@@ -84,22 +84,41 @@ export const team = [
 export const advisors = [
   {
     name: 'Roger Campama',
-    email: 'info@blackai.com',
-    role: { en: 'Strategic Advisor', es: 'Asesor Estratégico' },
-    bio: {
-      en: 'Roger Campama serves as Strategic Advisor to BLACK AI, providing guidance on capital formation, transaction structuring and international investment strategies. Drawing on extensive experience in private capital, family office advisory and cross-border business development, he supports the company\'s efforts to attract strategic investors and build institutional frameworks capable of supporting large-scale AI infrastructure investments.',
-      es: 'Roger Campama actúa como Asesor Estratégico de BLACK AI, aportando orientación en formación de capital, estructuración de transacciones y estrategias de inversión internacional.',
+    email: 'roger.campama@blackai.com',
+    role: {
+      en: 'Lead Strategic Partner & Capital Markets Advisor',
+      es: 'Socio Estratégico Principal y Asesor de Mercados de Capitales',
     },
-    imageSrc: '',
+    bio: {
+      en: 'Roger Campama holds degrees in Business Sciences and Actuarial and Financial Sciences, completed the General Management Programme at IESE Business School, and holds a Master\'s in Financial Risk, European Financial Analyst (CEFA), postgraduate degrees in Audit and International Taxation, and a Master\'s in Options and Derivatives. He holds the financial adviser licence granted by the Uniform Investment Adviser Law Examination (Series 65). He developed his professional career in banking, insurance companies and insurance brokerages, always in leadership positions specialising in Fixed Income, Equities, Unit Linked and insurance financial products. Founding partner and President of the In On Capital group.',
+      es: 'Roger Campama cursó estudios de Ciencias Empresariales, es Licenciado en Ciencias Actuariales y Financieras, realizó el Programa de Dirección General en IESE Business School. Es Master en Riesgos Financieros, Analista Financiero Europeo (CEFA), Posgraduado en Auditoría y Posgraduado en Fiscalidad Internacional. Es Master en Opciones y Derivados. Cuenta con la licencia de asesor financiero otorgada por el Uniform Investment Adviser Law Examination (Series 65). Desarrolló su carrera profesional en banca, compañías de seguros y corredurías de seguros, siempre en posiciones de liderazgo especializándose en mercados de Renta Fija, Renta Variable, Unit Linked y productos financieros de seguros. Socio fundador y Presidente del grupo In On Capital.',
+    },
+    imageSrc: '/Fotos Equipo/Roger Campama.jpg',
   },
   {
     name: 'Johann Gamboa',
-    email: 'info@blackai.com',
-    role: { en: 'Strategic Advisor', es: 'Asesor Estratégico' },
-    bio: {
-      en: 'Johann Gamboa serves as Strategic Advisor to BLACK AI, advising on business development, investor engagement and strategic capital initiatives across Latin America and international markets. His experience in corporate advisory, wealth structuring and investment relationships supports the company\'s mission to develop and scale institutional-grade digital infrastructure platforms.',
-      es: 'Johann Gamboa actúa como Asesor Estratégico de BLACK AI, asesorando en desarrollo de negocio, captación de inversores e iniciativas de capital estratégico en América Latina y mercados internacionales.',
+    email: 'johann.gamboa@blackai.com',
+    role: {
+      en: 'Strategic Partner & Business Development Advisor',
+      es: 'Socio Estratégico y Asesor de Desarrollo de Negocio',
     },
-    imageSrc: '',
+    bio: {
+      en: 'Experienced banking professional with a strong background in Wealth Management, Corporate Banking, SME Banking, Consumer Banking, and Cash Management. Proven track record in business development, strategic sales, client relationship management, and team leadership, with a focus on driving growth and building long-term partnerships.',
+      es: 'Profesional bancario con amplia experiencia en Wealth Management, Banca Corporativa, Banca Pyme, Banca de Consumo y Cash Management. Trayectoria contrastada en desarrollo de negocio, ventas estratégicas, gestión de relaciones con clientes y liderazgo de equipos, con foco en impulsar el crecimiento y construir alianzas a largo plazo.',
+    },
+    imageSrc: '/Fotos Equipo/Johann Gamboa.jpg',
+  },
+  {
+    name: 'Laura Martinez',
+    email: 'laura.martinez@blackai.com',
+    role: {
+      en: 'Strategic Partner & Technical Infrastructure Advisor',
+      es: 'Socio Estratégico y Asesor de Infraestructura Técnica',
+    },
+    bio: {
+      en: 'Brings extensive experience in renewable energy development, energy infrastructure, and project execution, supporting the integration of resilient and sustainable power solutions across large-scale digital infrastructure platforms.',
+      es: 'Aporta una amplia experiencia en desarrollo de energías renovables, infraestructura energética y ejecución de proyectos, apoyando la integración de soluciones energéticas resilientes y sostenibles en plataformas de infraestructura digital a gran escala.',
+    },
+    imageSrc: '/Fotos Equipo/Laura Martinez.jpg',
   },
 ]

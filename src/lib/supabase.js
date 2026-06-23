@@ -52,6 +52,8 @@ export function dbProjectToApp(row) {
     specs:       row.specs || [],
     imageSrc:    row.image_url || '/images/inteligencia-artificial.jpg',
     pdfSrc:      row.pdf_url  || '',
+    mapLng:      row.map_lng  ?? null,
+    mapLat:      row.map_lat  ?? null,
     _source:     'supabase',
   }
 }
@@ -76,6 +78,8 @@ export function appProjectToDb(form, existingId) {
     specs:          form.specs         || [],
     image_url:      form.imageSrc      || null,
     pdf_url:        form.pdfSrc        || null,
+    map_lng:        form.mapLng !== '' && form.mapLng != null ? parseFloat(form.mapLng) : null,
+    map_lat:        form.mapLat !== '' && form.mapLat != null ? parseFloat(form.mapLat) : null,
   }
 }
 

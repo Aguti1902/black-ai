@@ -1,22 +1,28 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from 'react-simple-maps'
 import { motion, AnimatePresence } from 'framer-motion'
+import { usePublicProjects } from '../hooks/usePublicProjects.js'
 
 const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 
-const PROJECTS = [
-  { id: 'malpica',    name: 'DC Malpica AI',        region: 'Europe',        coords: [-8.82, 43.33], capacity: '250 MW' },
-  { id: 'sevilla',   name: 'Sevilla Campus',        region: 'Europe',        coords: [-5.99, 37.39], capacity: '180 MW' },
-  { id: 'panama',    name: 'Panama Digital Hub',    region: 'Latin America', coords: [-79.51, 8.99],  capacity: '120 MW' },
-  { id: 'colombia',  name: 'Colombia AI Campus',    region: 'Latin America', coords: [-74.07, 4.71],  capacity: '200 MW' },
-]
-
 export default function ProjectMap() {
   const [active, setActive] = useState(null)
+  const { projects } = usePublicProjects()
+
+  const mapProjects = useMemo(() =>
+    projects
+      .filter(p => p.mapLng != null && p.mapLat != null)
+      .map(p => ({
+        id: p.id,
+        name: p.name,
+        region: p.region,
+        coords: [p.mapLng, p.mapLat],
+        capacity: p.capacity,
+      })),
+  [projects])
 
   return (
     <div style={{ position: 'relative', backgroundColor: '#050508', overflow: 'hidden' }}>
-      {/* Header */}
       <div className="container-content" style={{ paddingTop: '5rem', paddingBottom: '2rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '20px', marginBottom: '0' }}>
           <div>
@@ -33,7 +39,6 @@ export default function ProjectMap() {
         </div>
       </div>
 
-      {/* Map */}
       <div style={{ width: '100%', height: '460px', position: 'relative' }}>
         <ComposableMap
           projection="geoMercator"
@@ -57,12 +62,10 @@ export default function ProjectMap() {
               }
             </Geographies>
 
-            {PROJECTS.map(p => (
+            {mapProjects.map(p => (
               <Marker key={p.id} coordinates={p.coords} onClick={() => setActive(active?.id === p.id ? null : p)}>
-                {/* Pulse ring */}
                 <circle r={14} fill="rgba(200,169,110,0.06)" style={{ animation: 'mapPulse 2.5s infinite' }} />
                 <circle r={8}  fill="rgba(200,169,110,0.12)" />
-                {/* Dot */}
                 <circle
                   r={5}
                   fill={active?.id === p.id ? '#C8A96E' : 'rgba(200,169,110,0.7)'}
@@ -75,7 +78,6 @@ export default function ProjectMap() {
           </ZoomableGroup>
         </ComposableMap>
 
-        {/* Tooltip */}
         <AnimatePresence>
           {active && (
             <motion.div
@@ -107,10 +109,9 @@ export default function ProjectMap() {
         </AnimatePresence>
       </div>
 
-      {/* Legend */}
       <div className="container-content" style={{ paddingBottom: '4rem' }}>
         <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
-          {PROJECTS.map(p => (
+          {mapProjects.map(p => (
             <button
               key={p.id}
               onClick={() => setActive(active?.id === p.id ? null : p)}

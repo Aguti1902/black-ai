@@ -167,26 +167,9 @@ export default function QuienesSomos() {
             className="mb-12"
           />
 
-          <div className="grid border-l border-t border-[color:var(--border)] sm:grid-cols-3">
+          <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3">
             {advisors.map((advisor, i) => (
-              <Reveal
-                key={advisor.name}
-                delay={i * 0.07}
-                className="border-b border-r border-[color:var(--border)] bg-[color:var(--surface)] p-8"
-              >
-                <h3
-                  className="text-[1.15rem] font-bold uppercase text-[color:var(--ink)]"
-                  style={{ fontFamily: '"Space Grotesk", system-ui, sans-serif', letterSpacing: '-0.01em' }}
-                >
-                  {advisor.name}
-                </h3>
-                <p
-                  className="mt-2 text-[0.62rem] uppercase tracking-[0.22em]"
-                  style={{ fontFamily: '"Space Grotesk", system-ui, sans-serif', color: '#B8924A' }}
-                >
-                  {L(advisor.role)}
-                </p>
-              </Reveal>
+              <TeamCard key={advisor.name} member={advisor} index={i} />
             ))}
           </div>
         </div>

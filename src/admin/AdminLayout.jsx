@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useNavigate, Outlet } from 'react-router-dom'
-import { LayoutDashboard, FileText, FolderOpen, LogOut, Image } from 'lucide-react'
+import { LayoutDashboard, FileText, FolderOpen, LogOut, Image, BarChart2 } from 'lucide-react'
 import { supabase } from '../lib/supabase.js'
 
 const NAV = [
   { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/admin/blog',      icon: FileText,        label: 'Blog / News' },
   { to: '/admin/projects',  icon: FolderOpen,      label: 'Projects' },
+  { to: '/admin/metrics',   icon: BarChart2,       label: 'Metrics & Map' },
   { to: '/admin/images',    icon: Image,           label: 'Images' },
 ]
 

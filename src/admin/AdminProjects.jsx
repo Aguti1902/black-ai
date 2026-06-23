@@ -54,7 +54,7 @@ export function AdminProjectsList() {
   )
 }
 
-const EMPTY = { name:'', region:'Europe', capacity:'', tags:'', locationEn:'', locationEs:'', statusEn:'Development Phase', statusEs:'', taglineEn:'', taglineEs:'', descEn:'', descEs:'', highlightsEn:'', highlightsEs:'', imageSrc:'', pdfSrc:'' }
+const EMPTY = { name:'', region:'Europe', capacity:'', tags:'', locationEn:'', locationEs:'', statusEn:'Development Phase', statusEs:'', taglineEn:'', taglineEs:'', descEn:'', descEs:'', highlightsEn:'', highlightsEs:'', imageSrc:'', pdfSrc:'', mapLng:'', mapLat:'' }
 
 function rowToForm(existing) {
   return {
@@ -74,6 +74,8 @@ function rowToForm(existing) {
     highlightsEs: (existing.highlights?.es || []).join('\n'),
     imageSrc:     existing.imageSrc     || '',
     pdfSrc:       existing.pdfSrc       || '',
+    mapLng:       existing.mapLng ?? '',
+    mapLat:       existing.mapLat ?? '',
   }
 }
 
@@ -164,6 +166,8 @@ export function AdminProjectEditor() {
           <F label="Highlights (ES)" field="highlightsEs" multiline rows={4} hint="one per line" />
           <F label="Cover Image URL" field="imageSrc" />
           <F label="PDF URL (Supabase Storage)" field="pdfSrc" />
+          <F label="Map Longitude" field="mapLng" hint="e.g. -8.82 — shown on homepage map" />
+          <F label="Map Latitude" field="mapLat" hint="e.g. 43.33" />
         </div>
 
         <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
