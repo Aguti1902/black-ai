@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase.js'
+import { supabase, supabaseConfigured } from '../lib/supabase.js'
 
 export default function AdminLogin() {
   const navigate = useNavigate()
@@ -12,13 +12,24 @@ export default function AdminLogin() {
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
+
+    if (!supabaseConfigured) {
+      setError('Supabase is not configured. Contact the developer to set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.')
+      return
+    }
+
     setLoading(true)
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password: pass })
-    if (authError) {
-      setError(authError.message)
+    try {
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password: pass })
+      if (authError) {
+        setError(authError.message)
+      } else {
+        navigate('/admin/dashboard', { replace: true })
+      }
+    } catch {
+      setError('Could not connect to Supabase. Check your internet connection or Supabase project status.')
+    } finally {
       setLoading(false)
-    } else {
-      navigate('/admin/dashboard', { replace: true })
     }
   }
 

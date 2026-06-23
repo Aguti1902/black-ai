@@ -1,9 +1,18 @@
 import { createClient } from '@supabase/supabase-js'
 
-export const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY,
-)
+// Fallbacks for production when VITE_* env vars are not set in Vercel/hosting.
+// The anon key is public by design — access is controlled via Supabase RLS policies.
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL ||
+  'https://iskqcjocoremhxpaaavp.supabase.co'
+
+const SUPABASE_ANON_KEY =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlza3Fjam9jb3JlbWh4cGFhYXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMjYyNjgsImV4cCI6MjA5NTkwMjI2OH0.WC_Ryn5iKkbgj0eL-MOVrTb51jtt6Js5FcsKj0Miqt0'
+
+export const supabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY)
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 /* ── Helpers de transformación ─────────────────────────── */
 
