@@ -1,8 +1,15 @@
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext.jsx'
+import { useSiteContact } from '../hooks/useSiteContact.js'
+import { resolveSocialLinks } from '../data/siteContact.js'
 
 export default function Footer() {
-  const { t } = useApp()
+  const { t, lang } = useApp()
+  const { contact } = useSiteContact()
+
+  const loc1 = lang === 'es' ? contact.footerLocationEs : contact.footerLocationEn
+  const loc2 = lang === 'es' ? contact.footerLocation2Es : contact.footerLocation2En
+  const socialLinks = resolveSocialLinks(contact)
 
   const columns = [
     {
@@ -25,9 +32,10 @@ export default function Footer() {
     {
       title: t('footer.contact'),
       links: [
-        { label: 'info@black-ai.com', to: '/contacto' },
-        { label: t('footer.madrid'), to: '/contacto' },
-        { label: t('footer.panama'), to: '/contacto' },
+        { label: contact.generalEmail, to: '/contacto', external: false },
+        ...(contact.generalPhone ? [{ label: contact.generalPhone, to: `tel:${contact.generalPhone.replace(/\s/g, '')}`, external: true }] : []),
+        ...(loc1 ? [{ label: loc1, to: '/contacto' }] : []),
+        ...(loc2 ? [{ label: loc2, to: '/contacto' }] : []),
       ],
     },
     {
@@ -42,7 +50,6 @@ export default function Footer() {
 
   return (
     <footer style={{ backgroundColor: '#141414' }}>
-      {/* CTA row */}
       <div className="container-content py-16 md:py-20">
         <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
           <p
@@ -58,12 +65,10 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Hairline */}
       <div className="container-content">
         <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', width: '100%' }} />
       </div>
 
-      {/* Links grid */}
       <div className="container-content py-14">
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
           {columns.map((col) => (
@@ -80,24 +85,61 @@ export default function Footer() {
               <ul className="space-y-3">
                 {col.links.map((l, i) => (
                   <li key={`${col.title}-${i}`}>
-                    <Link
-                      to={l.to}
-                      className="text-sm transition-colors"
-                      style={{ color: 'rgba(255,255,255,0.65)' }}
-                      onMouseEnter={e => (e.target.style.color = '#B8924A')}
-                      onMouseLeave={e => (e.target.style.color = 'rgba(255,255,255,0.65)')}
-                    >
-                      {l.label}
-                    </Link>
+                    {l.external ? (
+                      <a
+                        href={l.to}
+                        className="text-sm transition-colors"
+                        style={{ color: 'rgba(255,255,255,0.65)' }}
+                        onMouseEnter={e => (e.target.style.color = '#B8924A')}
+                        onMouseLeave={e => (e.target.style.color = 'rgba(255,255,255,0.65)')}
+                      >
+                        {l.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={l.to}
+                        className="text-sm transition-colors"
+                        style={{ color: 'rgba(255,255,255,0.65)' }}
+                        onMouseEnter={e => (e.target.style.color = '#B8924A')}
+                        onMouseLeave={e => (e.target.style.color = 'rgba(255,255,255,0.65)')}
+                      >
+                        {l.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
+
+        {socialLinks.length > 0 && (
+          <div className="mt-10 flex flex-wrap gap-6 border-t border-white/10 pt-8">
+            {socialLinks.map(link => (
+              <a
+                key={link.key}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontFamily: '"Space Grotesk", system-ui, sans-serif',
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.12em',
+                  color: 'rgba(255,255,255,0.4)',
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => (e.target.style.color = '#B8924A')}
+                onMouseLeave={e => (e.target.style.color = 'rgba(255,255,255,0.4)')}
+              >
+                {link.label} ↗
+              </a>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Bottom bar */}
       <div className="container-content pb-8">
         <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', width: '100%', marginBottom: '1.5rem' }} />
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

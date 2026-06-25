@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useNavigate, Outlet } from 'react-router-dom'
-import { LayoutDashboard, FileText, FolderOpen, LogOut, Image, BarChart2, Users } from 'lucide-react'
+import { LayoutDashboard, FileText, FolderOpen, LogOut, Image, BarChart2, Users, Mail } from 'lucide-react'
 import { supabase } from '../lib/supabase.js'
 
 const NAV = [
@@ -9,6 +9,7 @@ const NAV = [
   { to: '/admin/projects',  icon: FolderOpen,      label: 'Projects' },
   { to: '/admin/metrics',   icon: BarChart2,       label: 'Metrics & Map' },
   { to: '/admin/team',      icon: Users,           label: 'Team' },
+  { to: '/admin/contact',   icon: Mail,            label: 'Contact & Social' },
   { to: '/admin/images',    icon: Image,           label: 'Images' },
 ]
 

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Mail, ArrowRight, CheckCircle } from 'lucide-react'
+import { MapPin, Mail, ArrowRight, CheckCircle, Phone } from 'lucide-react'
 import emailjs from '@emailjs/browser'
 
 import PageTransition from '../components/PageTransition.jsx'
@@ -9,6 +9,8 @@ import SectionHeader from '../components/SectionHeader.jsx'
 import Reveal from '../components/Reveal.jsx'
 import SEO from '../components/SEO.jsx'
 import { useApp } from '../context/AppContext.jsx'
+import { useSiteContact } from '../hooks/useSiteContact.js'
+import { resolveOffices, resolveSocialLinks } from '../data/siteContact.js'
 
 const inputBase = {
   fontFamily: 'Inter, system-ui, sans-serif',
@@ -47,11 +49,15 @@ const EJS_KEY      = import.meta.env.VITE_EMAILJS_KEY      || ''
 
 export default function Contacto() {
   const { t, lang } = useApp()
+  const { contact } = useSiteContact()
   const c = t('contact')
   const formRef = useRef(null)
 
+  const offices = resolveOffices(contact, lang)
+  const socialLinks = resolveSocialLinks(contact)
+
   const [form, setForm] = useState({ name: '', email: '', company: '', subject: '', message: '' })
-  const [status, setStatus] = useState('idle') // idle | sending | sent | error
+  const [status, setStatus] = useState('idle')
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -70,8 +76,6 @@ export default function Contacto() {
       setStatus('sent') // still show success to UX; emails log can debug
     }
   }
-
-  const offices = c.offices || []
 
   return (
     <PageTransition>
@@ -224,7 +228,7 @@ export default function Contacto() {
 
               <div className="flex flex-col gap-10">
                 {offices.map((office, i) => (
-                  <Reveal key={office.city} delay={i * 0.1}>
+                  <Reveal key={office.id || office.city} delay={i * 0.1}>
                     <div className="border-l-2 border-[color:var(--gold)] pl-6">
                       <p
                         className="mb-0.5 text-[0.65rem] font-bold uppercase tracking-[0.2em]"
@@ -260,12 +264,25 @@ export default function Contacto() {
                             {office.email}
                           </a>
                         </div>
+                        {office.phone && (
+                          <div className="flex items-center gap-3">
+                            <Phone size={13} className="shrink-0" style={{ color: '#B8924A' }} />
+                            <a
+                              href={`tel:${office.phone.replace(/\s/g, '')}`}
+                              className="text-sm text-[color:var(--body)] transition-colors hover:text-[#B8924A]"
+                              style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
+                            >
+                              {office.phone}
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Reveal>
                 ))}
 
-                {/* LinkedIn / additional */}
+                {/* Social links */}
+                {(socialLinks.length > 0 || contact.generalPhone) && (
                 <Reveal delay={0.22}>
                   <div className="border-t border-[color:var(--border)] pt-8">
                     <p
@@ -274,17 +291,32 @@ export default function Contacto() {
                     >
                       {lang === 'es' ? 'Síguenos' : 'Follow us'}
                     </p>
-                    <a
-                      href="https://linkedin.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-[0.8rem] font-bold uppercase tracking-[0.06em] text-[color:var(--ink)] transition-colors hover:text-[#B8924A]"
-                      style={{ fontFamily: '"Space Grotesk", system-ui, sans-serif' }}
-                    >
-                      LinkedIn ↗
-                    </a>
+                    <div className="flex flex-col gap-3">
+                      {contact.generalPhone && (
+                        <a
+                          href={`tel:${contact.generalPhone.replace(/\s/g, '')}`}
+                          className="inline-flex items-center gap-2 text-[0.8rem] font-bold uppercase tracking-[0.06em] text-[color:var(--ink)] transition-colors hover:text-[#B8924A]"
+                          style={{ fontFamily: '"Space Grotesk", system-ui, sans-serif' }}
+                        >
+                          <Phone size={14} /> {contact.generalPhone}
+                        </a>
+                      )}
+                      {socialLinks.map(link => (
+                        <a
+                          key={link.key}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-[0.8rem] font-bold uppercase tracking-[0.06em] text-[color:var(--ink)] transition-colors hover:text-[#B8924A]"
+                          style={{ fontFamily: '"Space Grotesk", system-ui, sans-serif' }}
+                        >
+                          {link.label} ↗
+                        </a>
+                      ))}
+                    </div>
                   </div>
                 </Reveal>
+                )}
               </div>
             </div>
           </div>
