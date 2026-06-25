@@ -8,19 +8,19 @@ const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 
 const geoStyle = {
   default: {
-    fill: '#3D5A80',
-    stroke: 'rgba(200, 169, 110, 0.45)',
+    fill: '#141420',
+    stroke: 'rgba(200, 169, 110, 0.35)',
     strokeWidth: 0.6,
     outline: 'none',
   },
   hover: {
-    fill: '#4A6FA5',
-    stroke: 'rgba(200, 169, 110, 0.7)',
+    fill: '#1C1C2E',
+    stroke: 'rgba(200, 169, 110, 0.55)',
     strokeWidth: 0.8,
     outline: 'none',
   },
   pressed: {
-    fill: '#3D5A80',
+    fill: '#141420',
     outline: 'none',
   },
 }
@@ -50,26 +50,20 @@ export default function ProjectMap() {
     <div style={{
       position: 'relative',
       overflow: 'hidden',
-      background: 'linear-gradient(180deg, #0B1524 0%, #152238 50%, #0B1524 100%)',
+      backgroundColor: '#050508',
     }}>
-      {/* Grid overlay */}
-      <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.08,
-        backgroundImage: 'linear-gradient(rgba(200,169,110,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,110,0.5) 1px, transparent 1px)',
-        backgroundSize: '48px 48px',
-      }} />
 
       <div className="container-content" style={{ paddingTop: '5rem', paddingBottom: '2rem', position: 'relative' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', borderBottom: '1px solid rgba(200,169,110,0.2)', paddingBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '20px' }}>
           <div>
-            <span style={{ fontSize: '0.62rem', fontFamily: '"Space Grotesk", sans-serif', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(200,169,110,0.7)' }}>
+            <span style={{ fontSize: '0.62rem', fontFamily: '"Space Grotesk", sans-serif', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(255,255,255,0.3)' }}>
               Global Footprint
             </span>
             <h2 style={{ marginTop: '8px', fontFamily: '"Space Grotesk", system-ui, sans-serif', fontWeight: 700, fontSize: 'clamp(1.6rem, 3vw, 2.4rem)', color: 'white', textTransform: 'uppercase', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
               Development Platform
             </h2>
           </div>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)', maxWidth: '360px', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', maxWidth: '360px', lineHeight: 1.6 }}>
             {copy}
           </p>
         </div>
@@ -120,7 +114,7 @@ export default function ProjectMap() {
               style={{
                 position: 'absolute', bottom: '28px', left: '50%',
                 transform: 'translateX(-50%)',
-                backgroundColor: 'rgba(11, 21, 36, 0.97)',
+                backgroundColor: 'rgba(5, 5, 8, 0.97)',
                 border: '1px solid rgba(200,169,110,0.5)',
                 padding: '18px 28px',
                 minWidth: '240px',
