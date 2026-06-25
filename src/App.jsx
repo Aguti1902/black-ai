@@ -27,6 +27,7 @@ import { AdminBlogList, AdminBlogEditor }       from './admin/AdminBlog.jsx'
 import { AdminProjectsList, AdminProjectEditor } from './admin/AdminProjects.jsx'
 import AdminImages   from './admin/AdminImages.jsx'
 import AdminMetrics  from './admin/AdminMetrics.jsx'
+import { AdminTeamList, AdminTeamEditor } from './admin/AdminTeam.jsx'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -95,6 +96,8 @@ export default function App() {
           <Route path="projects"     element={<AdminProjectsList />} />
           <Route path="projects/:id" element={<AdminProjectEditor />} />
           <Route path="metrics"      element={<AdminMetrics />} />
+          <Route path="team"         element={<AdminTeamList />} />
+          <Route path="team/:id"     element={<AdminTeamEditor />} />
           <Route path="images"       element={<AdminImages />} />
         </Route>
         <Route path="/admin/*" element={<Navigate to="/admin/dashboard" replace />} />

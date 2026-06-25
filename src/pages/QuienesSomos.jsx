@@ -7,7 +7,7 @@ import SectionHeader from '../components/SectionHeader.jsx'
 import Reveal from '../components/Reveal.jsx'
 import TeamCard from '../components/TeamCard.jsx'
 import PhotoPlaceholder from '../components/PhotoPlaceholder.jsx'
-import { team, advisors } from '../data/team.js'
+import { usePublicTeam } from '../hooks/usePublicTeam.js'
 import { useApp } from '../context/AppContext.jsx'
 
 const focusAreas = [
@@ -39,6 +39,7 @@ const focusAreas = [
 
 export default function QuienesSomos() {
   const { t, L } = useApp()
+  const { team, advisors } = usePublicTeam()
 
   return (
     <PageTransition>

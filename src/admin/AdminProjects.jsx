@@ -166,8 +166,25 @@ export function AdminProjectEditor() {
           <F label="Highlights (ES)" field="highlightsEs" multiline rows={4} hint="one per line" />
           <F label="Cover Image URL" field="imageSrc" />
           <F label="PDF URL (Supabase Storage)" field="pdfSrc" />
-          <F label="Map Longitude" field="mapLng" hint="e.g. -8.82 — shown on homepage map" />
-          <F label="Map Latitude" field="mapLat" hint="e.g. 43.33" />
+        </div>
+
+        {/* Map coordinates — homepage interactive map */}
+        <div style={{ padding: '20px', border: '1px solid rgba(200,169,110,0.25)', backgroundColor: 'rgba(200,169,110,0.04)' }}>
+          <p style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#C8A96E', marginBottom: '6px', fontFamily: '"Space Grotesk", sans-serif', fontWeight: 700 }}>
+            Homepage Map Marker
+          </p>
+          <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', fontFamily: 'Inter, sans-serif', marginBottom: '16px', lineHeight: 1.5 }}>
+            Set coordinates to show this project on the interactive world map. Find them in Google Maps → right-click a point → copy coordinates (first number = Longitude, second = Latitude).
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <F label="Map Longitude" field="mapLng" hint="e.g. -8.82 for Spain" />
+            <F label="Map Latitude" field="mapLat" hint="e.g. 43.33 for Spain" />
+          </div>
+          {form.mapLng && form.mapLat && (
+            <p style={{ marginTop: '12px', fontSize: '0.72rem', color: 'rgba(74,222,128,0.8)', fontFamily: 'Inter, sans-serif' }}>
+              ✓ This project will appear on the homepage map after saving.
+            </p>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>

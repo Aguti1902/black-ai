@@ -95,3 +95,32 @@ export function appProjectToDb(form, existingId) {
 function slugify(s = '') {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || Date.now().toString()
 }
+
+export function dbTeamToApp(row) {
+  return {
+    id:        row.id,
+    name:      row.name,
+    email:     row.email || '',
+    role:      { en: row.role_en, es: row.role_es || row.role_en },
+    bio:       { en: row.bio_en,   es: row.bio_es   || row.bio_en },
+    imageSrc:  row.image_url || '',
+    section:   row.section || 'team',
+    sortOrder: row.sort_order ?? 0,
+    _source:   'supabase',
+  }
+}
+
+export function appTeamToDb(form, existingId) {
+  return {
+    id:         existingId || slugify(form.name),
+    name:       form.name,
+    email:      form.email || null,
+    role_en:    form.roleEn || null,
+    role_es:    form.roleEs || null,
+    bio_en:     form.bioEn  || null,
+    bio_es:     form.bioEs  || null,
+    image_url:  form.imageSrc || null,
+    section:    form.section || 'team',
+    sort_order: parseInt(form.sortOrder, 10) || 0,
+  }
+}
