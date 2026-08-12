@@ -26,11 +26,13 @@ const inputStyle = {
 
 /* ── List ───────────────────────────────────────────── */
 export function AdminTeamList() {
-  const { rows, loading, remove } = useAdminTeam()
+  const { rows, loading, error, remove } = useAdminTeam()
   const navigate = useNavigate()
   const [filter, setFilter] = useState('all')
+  const [actionError, setActionError] = useState('')
 
   const filtered = filter === 'all' ? rows : rows.filter(r => r.section === filter)
+  const showingFallbackOnly = !loading && rows.length > 0 && rows.every(r => r._source === 'static')
 
   async function handleDelete(item) {
     if (item._source === 'static') {
@@ -38,7 +40,12 @@ export function AdminTeamList() {
       return
     }
     if (!confirm(`Delete ${item.name}?`)) return
-    await remove(item.id)
+    setActionError('')
+    try {
+      await remove(item.id)
+    } catch (err) {
+      setActionError(err.message)
+    }
   }
 
   return (
@@ -54,6 +61,18 @@ export function AdminTeamList() {
       <p style={{ color: 'rgba(255,255,255,0.35)', fontFamily: 'Inter, sans-serif', fontSize: '0.82rem', marginBottom: '20px', lineHeight: 1.6 }}>
         Add, edit or remove team members and strategic partners. Changes appear on the About page immediately.
       </p>
+
+      {(error || showingFallbackOnly) && (
+        <div style={s.err}>
+          {error
+            ? `Supabase: ${error}`
+            : 'Could not find the table public.team_members in the schema cache.'}
+          {' '}Showing default profiles only — create/edit will fail until you run{' '}
+          <code style={{ color: '#ffcccc' }}>supabase-team.sql</code> in the Supabase SQL Editor
+          and reload the API schema.
+        </div>
+      )}
+      {actionError && <div style={s.err}>{actionError}</div>}
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
         {['all', 'team', 'advisors'].map(f => (

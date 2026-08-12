@@ -65,16 +65,26 @@ export function useAdminTeam() {
   const upsert = useCallback(async (form, existingId) => {
     const payload = appTeamToDb(form, existingId)
     const { error: err } = await supabase.from('team_members').upsert(payload, { onConflict: 'id' })
-    if (err) throw new Error(err.message)
+    if (err) throw new Error(formatTeamDbError(err.message))
     await load()
   }, [])
 
   const remove = useCallback(async (id) => {
     const { error: err } = await supabase.from('team_members').delete().eq('id', id)
-    if (err) throw new Error(err.message)
+    if (err) throw new Error(formatTeamDbError(err.message))
     setRows(prev => prev.filter(r => r.id !== id || r._source === 'static'))
     await load()
   }, [])
 
   return { rows, loading, error, upsert, remove, refresh: load }
+}
+
+function formatTeamDbError(message = '') {
+  if (/team_members/i.test(message) && /schema cache|does not exist|PGRST205/i.test(message)) {
+    return (
+      `${message} — La tabla public.team_members no está disponible en Supabase. ` +
+      `Ejecuta supabase-team.sql en el SQL Editor y recarga el schema (NOTIFY pgrst, 'reload schema').`
+    )
+  }
+  return message
 }
