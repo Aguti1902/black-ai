@@ -43,13 +43,14 @@ export function useAdminTeam() {
       .order('sort_order', { ascending: true })
 
     if (err) {
-      setError(err.message)
+      setError(formatTeamDbError(err.message))
       const all = [
         ...staticTeam.map(m => ({ ...m, id: slugify(m.name), section: 'team', _source: 'static' })),
         ...staticAdvisors.map(m => ({ ...m, id: slugify(m.name), section: 'advisors', _source: 'static' })),
       ]
       setRows(all)
     } else {
+      setError(null)
       const supabaseIds = new Set((data || []).map(r => r.id))
       const fallback = [
         ...staticTeam.filter(m => !supabaseIds.has(slugify(m.name))).map(m => ({ ...m, id: slugify(m.name), section: 'team', _source: 'static' })),
