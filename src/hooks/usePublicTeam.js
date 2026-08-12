@@ -2,8 +2,59 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase, dbTeamToApp, appTeamToDb } from '../lib/supabase.js'
 import { team as staticTeam, advisors as staticAdvisors } from '../data/team.js'
 
+const MEMBERS_KEY = 'team_members'
+const HIDDEN_KEY = 'team_hidden_ids'
+
 function slugify(name = '') {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || Date.now().toString()
+}
+
+function staticDefaults() {
+  return [
+    ...staticTeam.map(m => ({ ...m, id: slugify(m.name), section: 'team', sortOrder: 0, _source: 'static' })),
+    ...staticAdvisors.map(m => ({ ...m, id: slugify(m.name), section: 'advisors', sortOrder: 0, _source: 'static' })),
+  ]
+}
+
+function mergeRoster(dbRows, hiddenIds) {
+  const hidden = new Set(hiddenIds || [])
+  const byId = new Map()
+
+  for (const row of dbRows || []) {
+    const app = dbTeamToApp(row)
+    byId.set(app.id, app)
+  }
+
+  for (const item of staticDefaults()) {
+    if (hidden.has(item.id) || byId.has(item.id)) continue
+    byId.set(item.id, item)
+  }
+
+  return [...byId.values()].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+}
+
+async function fetchRoster() {
+  const { data, error } = await supabase
+    .from('site_settings')
+    .select('key, value')
+    .in('key', [MEMBERS_KEY, HIDDEN_KEY])
+
+  if (error) throw new Error(error.message)
+
+  const map = Object.fromEntries((data || []).map(r => [r.key, r.value]))
+  const members = Array.isArray(map[MEMBERS_KEY]) ? map[MEMBERS_KEY] : []
+  const hiddenIds = Array.isArray(map[HIDDEN_KEY]) ? map[HIDDEN_KEY] : []
+  return { members, hiddenIds }
+}
+
+async function saveSetting(key, value) {
+  const { error } = await supabase
+    .from('site_settings')
+    .upsert(
+      { key, value, updated_at: new Date().toISOString() },
+      { onConflict: 'key' },
+    )
+  if (error) throw new Error(error.message)
 }
 
 export function usePublicTeam() {
@@ -12,16 +63,11 @@ export function usePublicTeam() {
   const [loading, setLoading]   = useState(true)
 
   useEffect(() => {
-    supabase.from('team_members').select('*').order('sort_order', { ascending: true })
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          const rows = data.map(dbTeamToApp)
-          const ids  = new Set(rows.map(r => r.id))
-          const fbTeam = staticTeam.filter(m => !ids.has(slugify(m.name)))
-          const fbAdv  = staticAdvisors.filter(m => !ids.has(slugify(m.name)))
-          setTeam([...rows.filter(r => r.section === 'team'), ...fbTeam])
-          setAdvisors([...rows.filter(r => r.section === 'advisors'), ...fbAdv])
-        }
+    fetchRoster()
+      .then(({ members, hiddenIds }) => {
+        const rows = mergeRoster(members, hiddenIds)
+        setTeam(rows.filter(r => r.section === 'team'))
+        setAdvisors(rows.filter(r => r.section === 'advisors'))
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -37,26 +83,13 @@ export function useAdminTeam() {
 
   async function load() {
     setLoading(true)
-    const { data, error: err } = await supabase
-      .from('team_members')
-      .select('*')
-      .order('sort_order', { ascending: true })
-
-    if (err) {
-      setError(formatTeamDbError(err.message))
-      const all = [
-        ...staticTeam.map(m => ({ ...m, id: slugify(m.name), section: 'team', _source: 'static' })),
-        ...staticAdvisors.map(m => ({ ...m, id: slugify(m.name), section: 'advisors', _source: 'static' })),
-      ]
-      setRows(all)
-    } else {
+    try {
+      const { members, hiddenIds } = await fetchRoster()
       setError(null)
-      const supabaseIds = new Set((data || []).map(r => r.id))
-      const fallback = [
-        ...staticTeam.filter(m => !supabaseIds.has(slugify(m.name))).map(m => ({ ...m, id: slugify(m.name), section: 'team', _source: 'static' })),
-        ...staticAdvisors.filter(m => !supabaseIds.has(slugify(m.name))).map(m => ({ ...m, id: slugify(m.name), section: 'advisors', _source: 'static' })),
-      ]
-      setRows([...(data || []).map(dbTeamToApp), ...fallback])
+      setRows(mergeRoster(members, hiddenIds))
+    } catch (err) {
+      setError(err.message)
+      setRows(staticDefaults())
     }
     setLoading(false)
   }
@@ -65,27 +98,25 @@ export function useAdminTeam() {
 
   const upsert = useCallback(async (form, existingId) => {
     const payload = appTeamToDb(form, existingId)
-    const { error: err } = await supabase.from('team_members').upsert(payload, { onConflict: 'id' })
-    if (err) throw new Error(formatTeamDbError(err.message))
+    const { members, hiddenIds } = await fetchRoster()
+    const next = [...members.filter(m => m.id !== payload.id), payload]
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    await saveSetting(MEMBERS_KEY, next)
+    if (hiddenIds.includes(payload.id)) {
+      await saveSetting(HIDDEN_KEY, hiddenIds.filter(id => id !== payload.id))
+    }
     await load()
   }, [])
 
   const remove = useCallback(async (id) => {
-    const { error: err } = await supabase.from('team_members').delete().eq('id', id)
-    if (err) throw new Error(formatTeamDbError(err.message))
-    setRows(prev => prev.filter(r => r.id !== id || r._source === 'static'))
+    const { members, hiddenIds } = await fetchRoster()
+    const nextMembers = members.filter(m => m.id !== id)
+    const nextHidden = hiddenIds.includes(id) ? hiddenIds : [...hiddenIds, id]
+    await saveSetting(MEMBERS_KEY, nextMembers)
+    await saveSetting(HIDDEN_KEY, nextHidden)
+    setRows(prev => prev.filter(r => r.id !== id))
     await load()
   }, [])
 
   return { rows, loading, error, upsert, remove, refresh: load }
-}
-
-function formatTeamDbError(message = '') {
-  if (/team_members/i.test(message) && /schema cache|does not exist|PGRST205/i.test(message)) {
-    return (
-      `${message} — La tabla public.team_members no está disponible en Supabase. ` +
-      `Ejecuta supabase-team.sql en el SQL Editor y recarga el schema (NOTIFY pgrst, 'reload schema').`
-    )
-  }
-  return message
 }

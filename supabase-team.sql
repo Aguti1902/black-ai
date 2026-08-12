@@ -1,9 +1,8 @@
--- Run in Supabase SQL Editor (safe to re-run)
--- Fixes: "Could not find the table 'public.team_members' in the schema cache"
--- Project: https://supabase.com/dashboard/project/iskqcjocoremhxpaaavp
+-- OPTIONAL — the app now stores team profiles in site_settings
+-- (keys: team_members, team_hidden_ids), same pattern as contact/metrics.
 --
--- After running, PostgREST picks up the table via NOTIFY below.
--- If upserts still fail, also use: Settings → API → Reload schema
+-- Keep this file only if you later want a dedicated relational table.
+-- Safe to re-run. Project: https://supabase.com/dashboard/project/iskqcjocoremhxpaaavp
 
 create table if not exists public.team_members (
   id text primary key,
@@ -35,5 +34,4 @@ create policy "Auth write team_members"
 grant select on public.team_members to anon, authenticated;
 grant insert, update, delete on public.team_members to authenticated;
 
--- Refresh PostgREST schema cache so /rest/v1/team_members is exposed
 notify pgrst, 'reload schema';

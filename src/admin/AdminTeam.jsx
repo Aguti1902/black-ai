@@ -32,13 +32,8 @@ export function AdminTeamList() {
   const [actionError, setActionError] = useState('')
 
   const filtered = filter === 'all' ? rows : rows.filter(r => r.section === filter)
-  const showingFallbackOnly = !loading && rows.length > 0 && rows.every(r => r._source === 'static')
 
   async function handleDelete(item) {
-    if (item._source === 'static') {
-      alert('This profile is from the default list. Edit and save it first to create a Supabase copy, then you can delete that copy.')
-      return
-    }
     if (!confirm(`Delete ${item.name}?`)) return
     setActionError('')
     try {
@@ -62,16 +57,7 @@ export function AdminTeamList() {
         Add, edit or remove team members and strategic partners. Changes appear on the About page immediately.
       </p>
 
-      {(error || showingFallbackOnly) && (
-        <div style={s.err}>
-          {error
-            ? `Supabase: ${error}`
-            : 'Could not find the table public.team_members in the schema cache.'}
-          {' '}Showing default profiles only — create/edit will fail until you run{' '}
-          <code style={{ color: '#ffcccc' }}>supabase-team.sql</code> in the Supabase SQL Editor
-          and reload the API schema.
-        </div>
-      )}
+      {error && <div style={s.err}>Supabase: {error}</div>}
       {actionError && <div style={s.err}>{actionError}</div>}
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
@@ -107,7 +93,7 @@ export function AdminTeamList() {
           <button onClick={() => navigate(`/admin/team/${item.id}`)} style={s.btnGhost}>
             <Pencil size={13} /> Edit
           </button>
-          <button onClick={() => handleDelete(item)} style={{ ...s.btnGhost, color: item._source === 'static' ? 'rgba(255,255,255,0.2)' : '#ff6b6b', borderColor: item._source === 'static' ? 'rgba(255,255,255,0.06)' : 'rgba(255,100,100,0.2)' }}>
+          <button onClick={() => handleDelete(item)} style={{ ...s.btnGhost, color: '#ff6b6b', borderColor: 'rgba(255,100,100,0.2)' }}>
             <Trash2 size={13} />
           </button>
         </div>
