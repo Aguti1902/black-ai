@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase, dbTeamToApp, appTeamToDb } from '../lib/supabase.js'
 import { team as staticTeam, advisors as staticAdvisors } from '../data/team.js'
 
-const MEMBERS_KEY = 'team_members'
 const HIDDEN_KEY = 'team_hidden_ids'
 
 function slugify(name = '') {
@@ -16,45 +15,46 @@ function staticDefaults() {
   ]
 }
 
+/** DB rows always win. hidden_ids only suppress static fallbacks (soft-deleted defaults). */
 function mergeRoster(dbRows, hiddenIds) {
   const hidden = new Set(hiddenIds || [])
-  const byId = new Map()
+  const fromDb = (dbRows || []).map(dbTeamToApp)
+  const dbIds = new Set(fromDb.map(r => r.id))
 
-  for (const row of dbRows || []) {
-    const app = dbTeamToApp(row)
-    byId.set(app.id, app)
-  }
+  const fromStatic = staticDefaults().filter(
+    item => !dbIds.has(item.id) && !hidden.has(item.id),
+  )
 
-  for (const item of staticDefaults()) {
-    if (hidden.has(item.id) || byId.has(item.id)) continue
-    byId.set(item.id, item)
-  }
-
-  return [...byId.values()].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+  return [...fromDb, ...fromStatic].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
 }
 
-async function fetchRoster() {
+async function fetchHiddenIds() {
   const { data, error } = await supabase
     .from('site_settings')
-    .select('key, value')
-    .in('key', [MEMBERS_KEY, HIDDEN_KEY])
-
+    .select('value')
+    .eq('key', HIDDEN_KEY)
+    .maybeSingle()
   if (error) throw new Error(error.message)
-
-  const map = Object.fromEntries((data || []).map(r => [r.key, r.value]))
-  const members = Array.isArray(map[MEMBERS_KEY]) ? map[MEMBERS_KEY] : []
-  const hiddenIds = Array.isArray(map[HIDDEN_KEY]) ? map[HIDDEN_KEY] : []
-  return { members, hiddenIds }
+  return Array.isArray(data?.value) ? data.value : []
 }
 
-async function saveSetting(key, value) {
+async function saveHiddenIds(ids) {
   const { error } = await supabase
     .from('site_settings')
     .upsert(
-      { key, value, updated_at: new Date().toISOString() },
+      { key: HIDDEN_KEY, value: ids, updated_at: new Date().toISOString() },
       { onConflict: 'key' },
     )
   if (error) throw new Error(error.message)
+}
+
+async function fetchMembers() {
+  const { data, error } = await supabase
+    .from('team_members')
+    .select('*')
+    .order('sort_order', { ascending: true })
+  if (error) throw new Error(error.message)
+  return data || []
 }
 
 export function usePublicTeam() {
@@ -63,8 +63,8 @@ export function usePublicTeam() {
   const [loading, setLoading]   = useState(true)
 
   useEffect(() => {
-    fetchRoster()
-      .then(({ members, hiddenIds }) => {
+    Promise.all([fetchMembers().catch(() => []), fetchHiddenIds().catch(() => [])])
+      .then(([members, hiddenIds]) => {
         const rows = mergeRoster(members, hiddenIds)
         setTeam(rows.filter(r => r.section === 'team'))
         setAdvisors(rows.filter(r => r.section === 'advisors'))
@@ -84,7 +84,7 @@ export function useAdminTeam() {
   async function load() {
     setLoading(true)
     try {
-      const { members, hiddenIds } = await fetchRoster()
+      const [members, hiddenIds] = await Promise.all([fetchMembers(), fetchHiddenIds()])
       setError(null)
       setRows(mergeRoster(members, hiddenIds))
     } catch (err) {
@@ -98,22 +98,31 @@ export function useAdminTeam() {
 
   const upsert = useCallback(async (form, existingId) => {
     const payload = appTeamToDb(form, existingId)
-    const { members, hiddenIds } = await fetchRoster()
-    const next = [...members.filter(m => m.id !== payload.id), payload]
-      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-    await saveSetting(MEMBERS_KEY, next)
+    const { data, error: err } = await supabase
+      .from('team_members')
+      .upsert(payload, { onConflict: 'id' })
+      .select('id')
+      .maybeSingle()
+
+    if (err) throw new Error(err.message)
+    if (!data?.id) throw new Error('Save failed — no row returned. Check INSERT policy on team_members.')
+
+    // If this id was soft-hidden, un-hide so the profile shows in admin + public
+    const hiddenIds = await fetchHiddenIds()
     if (hiddenIds.includes(payload.id)) {
-      await saveSetting(HIDDEN_KEY, hiddenIds.filter(id => id !== payload.id))
+      await saveHiddenIds(hiddenIds.filter(id => id !== payload.id))
     }
+
     await load()
   }, [])
 
   const remove = useCallback(async (id) => {
-    const { members, hiddenIds } = await fetchRoster()
-    const nextMembers = members.filter(m => m.id !== id)
-    const nextHidden = hiddenIds.includes(id) ? hiddenIds : [...hiddenIds, id]
-    await saveSetting(MEMBERS_KEY, nextMembers)
-    await saveSetting(HIDDEN_KEY, nextHidden)
+    await supabase.from('team_members').delete().eq('id', id)
+    // Soft-hide so static defaults do not reappear on About / admin
+    const hiddenIds = await fetchHiddenIds()
+    if (!hiddenIds.includes(id)) {
+      await saveHiddenIds([...hiddenIds, id])
+    }
     setRows(prev => prev.filter(r => r.id !== id))
     await load()
   }, [])

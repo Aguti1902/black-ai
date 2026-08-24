@@ -158,14 +158,14 @@ export function AdminTeamEditor() {
   }
 
   async function save() {
-    if (!form.name) { setError('Name is required'); return }
+    if (!form.name?.trim()) { setError('Name is required'); return }
     setSaving(true); setError(''); setSuccess('')
     try {
       await upsert(form, isNew ? undefined : id)
-      setSuccess('Profile saved — visible on About page.')
+      setSuccess(isNew ? 'New profile created.' : 'Profile saved — visible on About page.')
       setTimeout(() => navigate('/admin/team'), 900)
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Save failed')
     } finally {
       setSaving(false)
     }
