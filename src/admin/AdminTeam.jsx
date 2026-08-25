@@ -121,6 +121,24 @@ function rowToForm(existing) {
   }
 }
 
+const labelStyle = {
+  fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.18em',
+  color: 'rgba(255,255,255,0.35)', fontFamily: '"Space Grotesk", sans-serif',
+}
+
+/** Stable field component — must stay outside the editor or inputs remount every keystroke. */
+function TeamField({ label, value, onChange, multiline = false, rows = 3 }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+      <label style={labelStyle}>{label}</label>
+      {multiline
+        ? <textarea value={value} onChange={onChange} rows={rows} style={{ ...inputStyle, resize: 'vertical' }} />
+        : <input value={value} onChange={onChange} style={inputStyle} />
+      }
+    </div>
+  )
+}
+
 /* ── Editor ─────────────────────────────────────────── */
 export function AdminTeamEditor() {
   const { id }   = useParams()
@@ -143,7 +161,7 @@ export function AdminTeamEditor() {
     }
   }, [rows, loading, id, isNew, hydrated])
 
-  function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
+  function setField(k, v) { setForm(f => ({ ...f, [k]: v })) }
 
   async function uploadImage(file) {
     if (!file) return
@@ -153,7 +171,7 @@ export function AdminTeamEditor() {
     const { error: err } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: true })
     if (err) { setError('Upload failed: ' + err.message); setUploading(false); return }
     const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
-    set('imageSrc', data.publicUrl)
+    setField('imageSrc', data.publicUrl)
     setUploading(false)
   }
 
@@ -170,16 +188,6 @@ export function AdminTeamEditor() {
       setSaving(false)
     }
   }
-
-  const F = ({ label, field, multiline = false, rows: r = 3 }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-      <label style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.35)', fontFamily: '"Space Grotesk", sans-serif' }}>{label}</label>
-      {multiline
-        ? <textarea value={form[field]} onChange={e => set(field, e.target.value)} rows={r} style={{ ...inputStyle, resize: 'vertical' }} />
-        : <input value={form[field]} onChange={e => set(field, e.target.value)} style={inputStyle} />
-      }
-    </div>
-  )
 
   if (!isNew && loading && !hydrated) {
     return (
@@ -202,33 +210,33 @@ export function AdminTeamEditor() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <div style={s.card}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-            <F label="Full Name *" field="name" />
-            <F label="Email" field="email" />
+            <TeamField label="Full Name *" value={form.name} onChange={e => setField('name', e.target.value)} />
+            <TeamField label="Email" value={form.email} onChange={e => setField('email', e.target.value)} />
             <div>
-              <label style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.35)', fontFamily: '"Space Grotesk", sans-serif' }}>Section</label>
-              <select value={form.section} onChange={e => set('section', e.target.value)} style={inputStyle}>
+              <label style={labelStyle}>Section</label>
+              <select value={form.section} onChange={e => setField('section', e.target.value)} style={inputStyle}>
                 <option value="team">Management Team</option>
                 <option value="advisors">Strategic Partners / Advisors</option>
               </select>
             </div>
-            <F label="Sort Order (0 = first)" field="sortOrder" />
-            <F label="Role (EN)" field="roleEn" />
-            <F label="Role (ES)" field="roleEs" />
+            <TeamField label="Sort Order (0 = first)" value={form.sortOrder} onChange={e => setField('sortOrder', e.target.value)} />
+            <TeamField label="Role (EN)" value={form.roleEn} onChange={e => setField('roleEn', e.target.value)} />
+            <TeamField label="Role (ES)" value={form.roleEs} onChange={e => setField('roleEs', e.target.value)} />
           </div>
         </div>
 
         <div style={s.card}>
           <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.2)', marginBottom: '14px', fontFamily: '"Space Grotesk", sans-serif' }}>Biography</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-            <F label="Bio (EN)" field="bioEn" multiline rows={8} />
-            <F label="Bio (ES)" field="bioEs" multiline rows={8} />
+            <TeamField label="Bio (EN)" value={form.bioEn} onChange={e => setField('bioEn', e.target.value)} multiline rows={8} />
+            <TeamField label="Bio (ES)" value={form.bioEs} onChange={e => setField('bioEs', e.target.value)} multiline rows={8} />
           </div>
         </div>
 
         <div style={s.card}>
           <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.2)', marginBottom: '14px', fontFamily: '"Space Grotesk", sans-serif' }}>Photo</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '12px', alignItems: 'start' }}>
-            <F label="Image URL" field="imageSrc" />
+            <TeamField label="Image URL" value={form.imageSrc} onChange={e => setField('imageSrc', e.target.value)} />
             <div style={{ paddingTop: '22px' }}>
               <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => uploadImage(e.target.files[0])} />
               <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} style={{ ...s.btnGhost, whiteSpace: 'nowrap' }}>
@@ -253,3 +261,4 @@ export function AdminTeamEditor() {
     </div>
   )
 }
+
