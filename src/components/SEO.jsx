@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 
-const BASE_URL = 'https://black-ai-iota.vercel.app'
+const BASE_URL = 'https://black-ai.ai'
 const OG_IMAGE = `${BASE_URL}/images/inteligencia-artificial.jpg`
 
 export default function SEO({ title, description, path = '' }) {
