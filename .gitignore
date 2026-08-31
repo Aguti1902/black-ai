@@ -6,3 +6,4 @@ dist
 # Original large source videos (keep locally, don't commit)
 public/*.mov
 public/*.MOV
+.vercel
