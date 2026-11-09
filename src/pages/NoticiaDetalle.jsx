@@ -3,6 +3,7 @@ import PageTransition from '../components/PageTransition.jsx'
 import PhotoPlaceholder from '../components/PhotoPlaceholder.jsx'
 import SectionHeader from '../components/SectionHeader.jsx'
 import Reveal from '../components/Reveal.jsx'
+import NewsGallery from '../components/NewsGallery.jsx'
 import { usePublicNews } from '../hooks/usePublicNews.js'
 import { useApp } from '../context/AppContext.jsx'
 
@@ -84,6 +85,13 @@ export default function NoticiaDetalle() {
                   ))
                 })()}
               </div>
+            </Reveal>
+          )}
+
+          {/* Extra photographs */}
+          {item.gallery?.length > 0 && (
+            <Reveal delay={0.12}>
+              <NewsGallery images={item.gallery} title={L(item.title)} />
             </Reveal>
           )}
 
