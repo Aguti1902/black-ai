@@ -16,7 +16,24 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 /* ── Helpers de transformación ─────────────────────────── */
 
-export function dbNewsToApp(row) {
+/**
+ * Accepts anything that may have been stored as a gallery (jsonb array,
+ * stringified JSON, array of `{ url }` objects) and returns a clean
+ * array of image URLs.
+ */
+export function normalizeGallery(value) {
+  let list = value
+  if (typeof list === 'string') {
+    try { list = JSON.parse(list) } catch { return [] }
+  }
+  if (!Array.isArray(list)) return []
+  return list
+    .map(entry => (typeof entry === 'string' ? entry : entry?.url))
+    .filter(url => typeof url === 'string' && url.trim() !== '')
+    .map(url => url.trim())
+}
+
+export function dbNewsToApp(row, galleryOverrides) {
   return {
     id:       row.id,
     title:    { en: row.title_en,    es: row.title_es    },
@@ -25,6 +42,7 @@ export function dbNewsToApp(row) {
     category: { en: row.category_en, es: row.category_es },
     date:     { en: row.date_en,     es: row.date_es     },
     imageSrc: row.image_url || '/images/inteligencia-artificial.jpg',
+    gallery:  normalizeGallery(row.gallery ?? galleryOverrides?.[row.id]),
     _source:  'supabase',
   }
 }
@@ -43,6 +61,7 @@ export function appNewsToDb(form, existingId) {
     date_en:     form.dateEn     || null,
     date_es:     form.dateEs     || null,
     image_url:   form.imageSrc   || null,
+    gallery:     normalizeGallery(form.gallery),
   }
 }
 

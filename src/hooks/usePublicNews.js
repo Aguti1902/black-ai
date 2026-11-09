@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase, dbNewsToApp } from '../lib/supabase.js'
+import { fetchGalleryOverrides, withGalleryOverride } from '../lib/newsGallery.js'
 import { news as staticNews } from '../data/news.js'
 
 /**
@@ -11,12 +12,17 @@ export function usePublicNews() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.from('news').select('*').order('created_at', { ascending: false })
-      .then(({ data }) => {
+    Promise.all([
+      supabase.from('news').select('*').order('created_at', { ascending: false }),
+      fetchGalleryOverrides(),
+    ])
+      .then(([{ data }, overrides]) => {
         if (data && data.length > 0) {
           const ids = new Set(data.map(r => r.id))
-          const fallback = staticNews.filter(n => !ids.has(n.id))
-          setNews([...data.map(dbNewsToApp), ...fallback])
+          const fallback = staticNews.filter(n => !ids.has(n.id)).map(n => withGalleryOverride(n, overrides))
+          setNews([...data.map(r => dbNewsToApp(r, overrides)), ...fallback])
+        } else {
+          setNews(staticNews.map(n => withGalleryOverride(n, overrides)))
         }
         setLoading(false)
       })
@@ -32,12 +38,16 @@ export function usePublicNewsById(id) {
 
   useEffect(() => {
     if (!id) { setLoading(false); return }
-    supabase.from('news').select('*').eq('id', id).single()
-      .then(({ data }) => {
+    Promise.all([
+      supabase.from('news').select('*').eq('id', id).single(),
+      fetchGalleryOverrides(),
+    ])
+      .then(([{ data }, overrides]) => {
         if (data) {
-          setItem(dbNewsToApp(data))
+          setItem(dbNewsToApp(data, overrides))
         } else {
-          setItem(staticNews.find(n => n.id === id) || null)
+          const fallback = staticNews.find(n => n.id === id)
+          setItem(fallback ? withGalleryOverride(fallback, overrides) : null)
         }
         setLoading(false)
       })

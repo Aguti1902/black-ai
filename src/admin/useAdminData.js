@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase, dbNewsToApp, appNewsToDb, dbProjectToApp, appProjectToDb } from '../lib/supabase.js'
+import { fetchGalleryOverrides, saveGalleryOverride, isMissingGalleryColumn, withGalleryOverride } from '../lib/newsGallery.js'
 import { news as staticNews }         from '../data/news.js'
 import { projects as staticProjects } from '../data/projects.js'
 
@@ -11,14 +12,17 @@ export function useAdminNews() {
 
   async function load() {
     setLoading(true)
-    const { data, error: err } = await supabase.from('news').select('*').order('created_at', { ascending: false })
+    const [{ data, error: err }, overrides] = await Promise.all([
+      supabase.from('news').select('*').order('created_at', { ascending: false }),
+      fetchGalleryOverrides(),
+    ])
     if (err) {
       setError(err.message)
-      setRows(staticNews)
+      setRows(staticNews.map(n => withGalleryOverride(n, overrides)))
     } else {
       const supabaseIds = new Set((data || []).map(r => r.id))
-      const fallback = staticNews.filter(n => !supabaseIds.has(n.id))
-      setRows([...(data || []).map(dbNewsToApp), ...fallback])
+      const fallback = staticNews.filter(n => !supabaseIds.has(n.id)).map(n => withGalleryOverride(n, overrides))
+      setRows([...(data || []).map(r => dbNewsToApp(r, overrides)), ...fallback])
     }
     setLoading(false)
   }
@@ -27,7 +31,15 @@ export function useAdminNews() {
 
   const upsert = useCallback(async (form, existingId) => {
     const payload = appNewsToDb(form, existingId)
-    const { error: err } = await supabase.from('news').upsert(payload, { onConflict: 'id' })
+    let { error: err } = await supabase.from('news').upsert(payload, { onConflict: 'id' })
+
+    if (err && isMissingGalleryColumn(err)) {
+      const { gallery, ...withoutGallery } = payload
+      const retry = await supabase.from('news').upsert(withoutGallery, { onConflict: 'id' })
+      err = retry.error
+      if (!err) await saveGalleryOverride(payload.id, gallery)
+    }
+
     if (err) throw new Error(err.message)
     await load()
   }, [])
